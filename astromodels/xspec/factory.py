@@ -14,13 +14,13 @@ from astromodels.utils.configuration import get_user_data_path
 class XSpecNotAvailable(ImportWarning):
     pass
 
-try:
+#try:
 
-    from astromodels.xspec import _xspec
+from astromodels.xspec import _xspec
 
-except ImportError:
+#except ImportError:
 
-    raise XSpecNotAvailable("You need to have XSPEC installed and configured in order to use its models.")
+#    raise XSpecNotAvailable("You need to have XSPEC installed and configured in order to use its models.")
 
 # When running in a Anaconda environment, the package xspec-modelsonly
 # will install the models data in a specific place, so we set the HEADAS variable to point to the right place for

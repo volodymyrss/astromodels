@@ -573,7 +573,7 @@ class Model(Node):
                 # Generate table with only a minimal set of info
                 if rich_output:
 
-                    this_name = long_path_formatter(parameter_name, 70)
+                    this_name = long_path_formatter(parameter_name, 140)
 
                 else:
 
