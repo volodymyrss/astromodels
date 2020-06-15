@@ -1,4 +1,8 @@
+from __future__ import print_function
+from __future__ import division
+from builtins import object
 import pytest
+import os
 
 import astropy.units as u
 import numpy as np
@@ -7,9 +11,12 @@ import pickle
 from astromodels.functions.function import FunctionMeta, Function1D, Function2D, FunctionDefinitionError, \
     UnknownParameter, DesignViolation, get_function, get_function_class, UnknownFunction, list_functions
 from astromodels.functions.functions import Powerlaw, Line
-from astromodels.functions.functions_2D import Gaussian_on_sphere
+from astromodels.functions.functions_2D import Gaussian_on_sphere, SpatialTemplate_2D
 from astromodels.functions.functions_3D import Continuous_injection_diffusion
 from astromodels.functions import function as function_module
+
+from astropy.io import fits
+from future.utils import with_metaclass
 
 __author__ = 'giacomov'
 
@@ -17,7 +24,7 @@ __author__ = 'giacomov'
 def get_a_function_class():
 
     # Try to create a function inheriting from Function with meta FunctionMeta
-    class Test_function(Function1D):
+    class Test_function(with_metaclass(FunctionMeta, Function1D)):
         r"""
         description :
 
@@ -38,8 +45,6 @@ def get_a_function_class():
                 initial value : 1
 
         """
-
-        __metaclass__ = FunctionMeta
 
         def _set_units(self, x_unit, y_unit):
 
@@ -62,14 +67,14 @@ def test_function_meta():
 
         # .evaluate is lacking, ._set_units is lacking, docstring is lacking
 
-        class Wrong_test_function1():
-            __metaclass__ = FunctionMeta
+        class Wrong_test_function1(with_metaclass(FunctionMeta, object)):
+            pass
 
     with pytest.raises(AttributeError):
 
         # .evaluate is lacking, ._set_units is lacking
 
-        class Wrong_test_function2(Function1D):
+        class Wrong_test_function2(with_metaclass(FunctionMeta, Function1D)):
             r"""
             description :
 
@@ -90,13 +95,11 @@ def test_function_meta():
                     initial value : 1
 
             """
-
-            __metaclass__ = FunctionMeta
 
     with pytest.raises(AttributeError):
         # _set_units is lacking
 
-        class Wrong_test_function3(Function1D):
+        class Wrong_test_function3(with_metaclass(FunctionMeta, Function1D)):
             r"""
             description :
 
@@ -117,8 +120,6 @@ def test_function_meta():
                     initial value : 1
 
             """
-
-            __metaclass__ = FunctionMeta
 
             def evaluate(self, x, a, b):
 
@@ -127,7 +128,7 @@ def test_function_meta():
     with pytest.raises(AssertionError):
         # Signature of evaluate is wrong
 
-        class Wrong_test_function4(Function1D):
+        class Wrong_test_function4(with_metaclass(FunctionMeta, Function1D)):
             r"""
             description :
 
@@ -148,8 +149,6 @@ def test_function_meta():
                     initial value : 1
 
             """
-
-            __metaclass__ = FunctionMeta
 
             def _set_units(self, x_unit, y_unit):
 
@@ -163,7 +162,7 @@ def test_function_meta():
     with pytest.raises(FunctionDefinitionError):
         # Signature of evaluate is wrong
 
-        class Wrong_test_function5(Function1D):
+        class Wrong_test_function5(with_metaclass(FunctionMeta, Function1D)):
             r"""
             description :
 
@@ -184,8 +183,6 @@ def test_function_meta():
                     initial value : 1
 
             """
-
-            __metaclass__ = FunctionMeta
 
             def _set_units(self, x_unit, y_unit):
                 self.a.unit = y_unit / x_unit
@@ -197,7 +194,7 @@ def test_function_meta():
     with pytest.raises(FunctionDefinitionError):
         # Signature of evaluate is wrong
 
-        class Wrong_test_function6(Function1D):
+        class Wrong_test_function6(with_metaclass(FunctionMeta, Function1D)):
             r"""
             description :
 
@@ -219,8 +216,6 @@ def test_function_meta():
 
             """
 
-            __metaclass__ = FunctionMeta
-
             def _set_units(self, x_unit, y_unit):
                 self.a.unit = y_unit / x_unit
                 self.b.unit = y_unit
@@ -231,7 +226,7 @@ def test_function_meta():
     with pytest.raises(FunctionDefinitionError):
         # Signature of evaluate does not match docstring
 
-        class Wrong_test_function7(Function1D):
+        class Wrong_test_function7(with_metaclass(FunctionMeta, Function1D)):
             r"""
             description :
 
@@ -253,8 +248,6 @@ def test_function_meta():
 
             """
 
-            __metaclass__ = FunctionMeta
-
             def _set_units(self, x_unit, y_unit):
                 self.a.unit = y_unit / x_unit
                 self.b.unit = y_unit
@@ -265,7 +258,7 @@ def test_function_meta():
     with pytest.raises(FunctionDefinitionError):
         # Definition of parameter b is not legal
 
-        class Wrong_test_function8(Function1D):
+        class Wrong_test_function8(with_metaclass(FunctionMeta, Function1D)):
             r"""
             description :
 
@@ -286,8 +279,6 @@ def test_function_meta():
 
             """
 
-            __metaclass__ = FunctionMeta
-
             def _set_units(self, x_unit, y_unit):
                 self.a.unit = y_unit / x_unit
                 self.b.unit = y_unit
@@ -298,7 +289,7 @@ def test_function_meta():
     with pytest.raises(FunctionDefinitionError):
         # Parameter c declared but not used
 
-        class Wrong_test_function9(Function1D):
+        class Wrong_test_function9(with_metaclass(FunctionMeta, Function1D)):
             r"""
             description :
 
@@ -325,8 +316,6 @@ def test_function_meta():
 
             """
 
-            __metaclass__ = FunctionMeta
-
             def _set_units(self, x_unit, y_unit):
                 self.a.unit = y_unit / x_unit
                 self.b.unit = y_unit
@@ -337,7 +326,7 @@ def test_function_meta():
     with pytest.raises(FunctionDefinitionError):
         # Parameter c used but not declared
 
-        class Wrong_test_function10(Function1D):
+        class Wrong_test_function10(with_metaclass(FunctionMeta, Function1D)):
             r"""
             description :
 
@@ -358,8 +347,6 @@ def test_function_meta():
                     initial value : 1
 
             """
-
-            __metaclass__ = FunctionMeta
 
             def _set_units(self, x_unit, y_unit):
                 self.a.unit = y_unit / x_unit
@@ -372,7 +359,7 @@ def test_function_meta():
     with pytest.raises(AssertionError):
         # Docstring lacking description
 
-        class Wrong_test_function11(Function1D):
+        class Wrong_test_function11(with_metaclass(FunctionMeta, Function1D)):
             r"""
             latex : $ a * x + b $
 
@@ -395,8 +382,6 @@ def test_function_meta():
 
             """
 
-            __metaclass__ = FunctionMeta
-
             def _set_units(self, x_unit, y_unit):
                 self.a.unit = y_unit / x_unit
                 self.b.unit = y_unit
@@ -407,7 +392,7 @@ def test_function_meta():
     with pytest.raises(FunctionDefinitionError):
         # Parameter lacking description
 
-        class Wrong_test_function12(Function1D):
+        class Wrong_test_function12(with_metaclass(FunctionMeta, Function1D)):
             r"""
 
             description: useless
@@ -432,8 +417,6 @@ def test_function_meta():
 
             """
 
-            __metaclass__ = FunctionMeta
-
             def _set_units(self, x_unit, y_unit):
                 self.a.unit = y_unit / x_unit
                 self.b.unit = y_unit
@@ -444,7 +427,7 @@ def test_function_meta():
     with pytest.raises(AssertionError):
         # Parameters out of order in evaluate
 
-        class Wrong_test_function13(Function2D):
+        class Wrong_test_function13(with_metaclass(FunctionMeta, Function2D)):
             r"""
 
             description: useless
@@ -471,8 +454,6 @@ def test_function_meta():
 
             """
 
-            __metaclass__ = FunctionMeta
-
             def _set_units(self, x_unit, y_unit, z_unit):
                 self.a.unit = y_unit / x_unit
                 self.b.unit = y_unit
@@ -482,7 +463,7 @@ def test_function_meta():
 
     # A function with no latex formula (which is optional)
 
-    class NoLatex_test_function11(Function1D):
+    class NoLatex_test_function11(with_metaclass(FunctionMeta, Function1D)):
         r"""
 
         description:
@@ -502,8 +483,6 @@ def test_function_meta():
                 initial value : 1
 
         """
-
-        __metaclass__ = FunctionMeta
 
         def _set_units(self, x_unit, y_unit):
             self.a.unit = y_unit / x_unit
@@ -621,7 +600,8 @@ def test_function_values_units():
 
     # Using one unit for each element will fail
 
-    with pytest.raises(ValueError):
+    # (depending on the version of astropy, it might raise ValueError or TypeError)
+    with pytest.raises((ValueError, TypeError)):
 
         _ = my_function([1 * u.keV, 2 * u.keV, 3 * u.keV])
 
@@ -797,55 +777,134 @@ def test_get_function_class():
 
 def test_list_functions():
 
-    print list_functions()
+    print(list_functions())
 
 
 def test_function2D():
 
     c = Gaussian_on_sphere()
 
-    _ = c(1, 1)
+    f1 = c(1, 1)
+    assert np.isclose( f1, 38.285617800653434, rtol=1e-10)
+    
 
     a = np.array([1.0, 2.0])
 
-    _ = c(a, a)
+    fa = c(a, a)
+    assert np.isclose( fa, [3.82856178e+01, 2.35952748e-04], rtol=1e-10).all()
 
     c.set_units(u.deg, u.deg, 1.0 / u.deg**2)
 
-    _ = c(1 * u.deg, 1.0 * u.deg)
+    f1d = c(1 * u.deg, 1.0 * u.deg)
+    assert np.isclose( f1d.value, 38.285617800653434, rtol=1e-10)
+    assert f1d.unit == u.deg**-2
 
-    _ = c(a * u.deg, a * u.deg)
+    assert c.x_unit == u.deg
+    assert c.y_unit == u.deg
+    assert c.z_unit == u.deg**-2
 
-    print c.x_unit
-    print c.y_unit
-    print c.z_unit
+    assert c.get_total_spatial_integral( 1 ) == 1
+    assert np.isclose( c.get_total_spatial_integral( [1,1] ) ,  [1,1], rtol=1e-10).all()
+    
 
     with pytest.raises(TypeError):
 
         c.set_units("not existent", u.deg, u.keV)
 
 
+
 def test_function3D():
 
     c = Continuous_injection_diffusion()
 
-    _ = c(1, 1, 1)
-
+    f1 = c(1, 1, 1)
+    assert np.isclose(f1, 134.95394313247866, rtol = 1e-10)
+    
     a = np.array([1.0, 2.0])
 
-    _ = c(a, a, a)
+    fa = c(a, a, a)
+    assert np.isclose( fa,  [[134.95394313, 132.19796573], [ 25.40751507, 27.321443  ]], rtol=1e-10).all()
 
     c.set_units(u.deg, u.deg, u.keV, 1.0 / u.deg**2)
 
-    _ = c(1 * u.deg, 1.0 * u.deg, 1.0 * u.keV)
+    f1d = c(1 * u.deg, 1.0 * u.deg, 1.0 * u.keV)
+    assert np.isclose(f1d.value, 134.95394313247866, rtol = 1e-10)
+    assert f1d.unit == u.deg**-2
+   
 
-    _ = c(a * u.deg, a * u.deg, a * u.keV)
+    assert c.x_unit == u.deg
+    assert c.y_unit == u.deg
+    assert c.z_unit == u.keV
+    assert c.w_unit == u.deg**-2
 
-    print c.x_unit
-    print c.y_unit
-    print c.z_unit
-    print c.w_unit
+    assert c.get_total_spatial_integral( 1 ) == 1
+    assert np.isclose( c.get_total_spatial_integral( [1,1] ) ,  [1,1], rtol=1e-10).all()
 
     with pytest.raises(TypeError):
 
         c.set_units("not existent", u.deg, u.keV, 1.0 / (u.keV * u.s * u.deg**2 * u.cm**2))
+
+
+def test_spatial_template_2D():
+
+    #make the fits files with templates to test.
+    cards = {
+      "SIMPLE": "T",                     
+      "BITPIX": -32,
+      "NAXIS" : 2,
+      "NAXIS1": 360,
+      "NAXIS2": 360,
+      "DATE": '2018-06-15',  
+      "CUNIT1": 'deg', 
+      "CRVAL1":  83,
+      "CRPIX1": 0,
+      "CDELT1": -0.0166667, 
+      "CUNIT2": 'deg',
+      "CRVAL2": -2.0,
+      "CRPIX2": 0,
+      "CDELT2": 0.0166667,
+      "CTYPE1": 'GLON-CAR',
+      "CTYPE2": 'GLAT-CAR' }
+
+    data = np.zeros([400,400])
+    data[0:100,0:100] = 1
+    hdu = fits.PrimaryHDU(data=data, header=fits.Header(cards))
+    hdu.writeto("test1.fits", overwrite=True)
+
+    data[:,:]=0
+    data[200:300,200:300] = 1
+    hdu = fits.PrimaryHDU(data=data, header=fits.Header(cards))
+    hdu.writeto("test2.fits", overwrite=True)
+
+
+    #Now load template files and test their evaluation
+    shape1=SpatialTemplate_2D()
+    shape1.load_file("test1.fits")
+    shape1.K = 1
+
+    shape2=SpatialTemplate_2D()
+    shape2.load_file("test2.fits")
+    shape2.K = 1
+
+    assert shape1.hash != shape2.hash
+        
+    assert np.all ( shape1.evaluate( [312, 306], [41, 41], [1,1], [40, 2]) == [1., 0.] ) 
+    assert np.all ( shape2.evaluate( [312, 306], [41, 41], [1,1], [40, 2]) ==  [0., 1.] ) 
+    assert np.all ( shape1.evaluate( [312, 306], [41, 41], [1,10], [40, 2]) == [1., 0.] ) 
+    assert np.all ( shape2.evaluate( [312, 306], [41, 41], [1,10], [40, 2]) ==  [0., 10.] ) 
+
+
+    shape1.K = 1
+    shape2.K = 1
+    assert np.all ( shape1( [312, 306], [41, 41]) == [1., 0.] )
+    assert np.all ( shape2( [312, 306], [41, 41]) == [0., 1.] )
+
+    shape1.K = 1
+    shape2.K = 10
+    assert np.all ( shape1( [312, 306], [41, 41]) == [1., 0.] )
+    assert np.all ( shape2( [312, 306], [41, 41]) == [0., 10.] )
+
+    os.remove("test1.fits")
+    os.remove("test2.fits")
+
+

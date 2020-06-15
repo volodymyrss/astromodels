@@ -1,7 +1,10 @@
+from __future__ import division
+from past.utils import old_div
 import collections
 
 import astropy.units as u
 import numpy
+import scipy.integrate
 
 from astromodels.core.sky_direction import SkyDirection
 from astromodels.core.spectral_component import SpectralComponent
@@ -9,6 +12,7 @@ from astromodels.core.tree import Node
 from astromodels.core.units import get_units
 from astromodels.sources.source import Source, POINT_SOURCE
 from astromodels.utils.pretty_list import dict_to_list
+from astromodels.core.memoization import use_astromodels_memoization
 
 __author__ = 'giacomov'
 
@@ -119,7 +123,7 @@ class PointSource(Source, Node):
         # Add a node called 'spectrum'
 
         spectrum_node = Node('spectrum')
-        spectrum_node._add_children(self._components.values())
+        spectrum_node._add_children(list(self._components.values()))
 
         self._add_child(spectrum_node)
 
@@ -134,29 +138,80 @@ class PointSource(Source, Node):
         y_unit = (current_units.energy * current_units.area * current_units.time) ** (-1)
 
         # Now set the units of the components
-        for component in self._components.values():
+        for component in list(self._components.values()):
 
             component.shape.set_units(x_unit, y_unit)
 
-    def __call__(self, x):
+    def __call__(self, x, tag=None):
 
-        results = [component.shape(x) for component in self.components.values()]
+        if tag is None:
 
-        if isinstance(x, u.Quantity):
+            # No integration nor time-varying or whatever-varying
 
-            # Slow version with units
+            if isinstance(x, u.Quantity):
 
-            # We need to sum like this (slower) because using np.sum will not preserve the units
-            # (thanks astropy.units)
+                # Slow version with units
 
-            return sum(results)
+                results = [component.shape(x) for component in list(self.components.values())]
+
+                # We need to sum like this (slower) because using np.sum will not preserve the units
+                # (thanks astropy.units)
+
+                return sum(results)
+
+            else:
+
+                # Fast version without units, where x is supposed to be in the same units as currently defined in
+                # units.get_units()
+
+                results = [component.shape(x) for component in list(self.components.values())]
+
+                return numpy.sum(results, 0)
 
         else:
 
-            # Fast version without units, where x is supposed to be in the same units as currently defined in
-            # units.get_units()
+            # Time-varying or energy-varying or whatever-varying
 
-            return numpy.sum(results, 0)
+            integration_variable, a, b = tag
+
+            if b is None:
+
+                # Evaluate in a, do not integrate
+
+                # Suspend memoization because the memoization gets confused when integrating
+                with use_astromodels_memoization(False):
+
+                    integration_variable.value = a
+
+                    res = self.__call__(x, tag=None)
+
+                return res
+
+            else:
+
+                # Integrate between a and b
+
+                integrals = numpy.zeros(len(x))
+
+                # TODO: implement an integration scheme avoiding the for loop
+
+                # Suspend memoization because the memoization gets confused when integrating
+                with use_astromodels_memoization(False):
+
+                    reentrant_call = self.__call__
+
+                    for i, e in enumerate(x):
+
+                        def integral(y):
+
+                            integration_variable.value = y
+
+                            return reentrant_call(e, tag=None)
+
+                        # Now integrate
+                        integrals[i] = scipy.integrate.quad(integral, a, b, epsrel=1e-5)[0]
+
+                return old_div(integrals, (b - a))
 
     def has_free_parameters(self):
         """
@@ -165,15 +220,15 @@ class PointSource(Source, Node):
         :return:
         """
 
-        for component in self._components.values():
+        for component in list(self._components.values()):
 
-            for par in component.shape.parameters.values():
+            for par in list(component.shape.parameters.values()):
 
                 if par.free:
 
                     return True
 
-        for par in self.position.parameters.values():
+        for par in list(self.position.parameters.values()):
 
             if par.free:
 
@@ -181,6 +236,55 @@ class PointSource(Source, Node):
 
         return False
 
+    @property
+    def free_parameters(self):
+        """
+        Returns a dictionary of free parameters for this source.
+        We use the parameter path as the key because it's 
+        guaranteed to be unique, unlike the parameter name.
+
+        :return:
+        """
+        free_parameters = collections.OrderedDict()
+
+        for component in list(self._components.values()):
+
+            for par in list(component.shape.parameters.values()):
+
+                if par.free:
+
+                    free_parameters[par.path] = par
+
+        for par in list(self.position.parameters.values()):
+
+            if par.free:
+
+                free_parameters[par.path] = par
+
+        return free_parameters
+
+    @property
+    def parameters(self):
+        """
+        Returns a dictionary of all parameters for this source.
+        We use the parameter path as the key because it's 
+        guaranteed to be unique, unlike the parameter name.
+
+        :return:
+        """
+        all_parameters = collections.OrderedDict()
+
+        for component in self._components.values():
+
+            for par in component.shape.parameters.values():
+
+                all_parameters[par.path] = par
+
+        for par in self.position.parameters.values():
+
+            all_parameters[par.path] = par
+
+        return all_parameters
 
     def _repr__base(self, rich_output=False):
         """
@@ -200,7 +304,7 @@ class PointSource(Source, Node):
         repr_dict[key]['position'] = self._sky_position.to_dict(minimal=True)
         repr_dict[key]['spectrum'] = collections.OrderedDict()
 
-        for component_name, component in self.components.iteritems():
+        for component_name, component in list(self.components.items()):
 
             repr_dict[key]['spectrum'][component_name] = component.to_dict(minimal=True)
 

@@ -1,6 +1,8 @@
+from builtins import str
 __author__ = 'giacomov'
 
-from html2text import html2text
+import yaml
+import re
 
 
 def _process_html(dictionary):
@@ -12,7 +14,7 @@ def _process_html(dictionary):
 
     output=[list_start]
 
-    for key,value in dictionary.iteritems():
+    for key,value in list(dictionary.items()):
 
         if isinstance(value, dict):
 
@@ -21,7 +23,7 @@ def _process_html(dictionary):
 
                 continue
 
-            if len(value) > 1 or isinstance(value.values()[0], dict):
+            if len(value) > 1 or isinstance(list(value.values())[0], dict):
 
                 output.append(entry_start + str(key) + ': ')
                 output.append(_process_html(value))
@@ -29,7 +31,7 @@ def _process_html(dictionary):
 
             else:
 
-                output.append(entry_start + str(key) + ': ' + str(value.values()[0]) + entry_stop)
+                output.append(entry_start + str(key) + ': ' + str(list(value.values())[0]) + entry_stop)
 
         else:
 
@@ -38,6 +40,19 @@ def _process_html(dictionary):
     output.append(list_stop)
 
     final_output = '\n'.join(output)
+
+    return final_output
+
+
+def _process_text(dictionary):
+
+    # Obtain YAML representation
+
+    string_repr = yaml.dump(dictionary, default_flow_style=False)
+
+    # Add a '*' for each point in the list and indent appropriately
+
+    final_output = re.sub("(\s*)(.+)", "\\1  * \\2", string_repr)
 
     return final_output
 
@@ -51,12 +66,10 @@ def dict_to_list(dictionary, html=False):
     :return: the list
     """
 
-    html_repr = _process_html(dictionary)
+    if html:
 
-    if not html:
-
-        return html2text(html_repr)
+        return _process_html(dictionary)
 
     else:
 
-        return html_repr
+        return _process_text(dictionary)

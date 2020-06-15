@@ -1,10 +1,18 @@
+from __future__ import print_function
+from __future__ import division
 import astropy.units as u
 import numpy as np
 import pytest
 
 from astromodels.core.spectral_component import SpectralComponent
-from astromodels.functions.functions import Powerlaw, Exponential_cutoff, Blackbody, Band
+from astromodels.functions.functions import Powerlaw, Exponential_cutoff, Log_parabola, Blackbody, Band
+from astromodels.functions.apec import TbAbs, PhAbs, WAbs
 from astromodels.sources.point_source import PointSource
+from astromodels.sources.particle_source import ParticleSource
+from astromodels.core.model import Model
+from astromodels.core.model_parser import clone_model, load_model
+
+
 
 try:
 
@@ -23,6 +31,9 @@ from astromodels.functions.function import _known_functions
 
 __author__ = 'giacomov'
 
+
+
+_multiplicative_models = ["PhAbs", "TbAbs", "WAbs"]
 
 def test_constructor():
 
@@ -155,7 +166,7 @@ def test_call_with_units():
     def test_one(class_type):
 
         instance = class_type()
-
+        
         if not instance.is_prior:
 
             # if we have fixed x_units then we will use those
@@ -174,19 +185,46 @@ def test_call_with_units():
             # Use the function as a spectrum
             ps = PointSource("test", 0, 0, instance)
 
+            if instance.name in [ "Synchrotron", "_ComplexTestFunction" ]:
+                particleSource = ParticleSource("particles", Powerlaw())
+                instance.set_particle_distribution(particleSource.spectrum.main.shape)
+
+
+            # elif instance.name in ["PhAbs", "TbAbs"]:
+
+            #     instance
+                
+
+            result = ps(1.0)
+
+            assert isinstance(result, float)
 
             result = ps(1.0 * x_unit_to_use)
-
 
             assert isinstance(result, u.Quantity)
 
             result = ps(np.array([1, 2, 3]) * x_unit_to_use)
 
             assert isinstance(result, u.Quantity)
+            
+            if instance.name in [ "Synchrotron", "_ComplexTestFunction" ]:
+              model = Model( particleSource, ps)
+            else:
+              model = Model( ps )
+            
+            new_model = clone_model( model )
+            
+            new_result =  new_model["test"](np.array([1, 2, 3]) * x_unit_to_use)
+            
+            assert np.all(new_result==result)
 
-            result = ps(1.0)
+            model.save("__test.yml", overwrite=True)
+            
+            new_model = load_model("__test.yml")
 
-            assert isinstance(result, float)
+            new_result =  new_model["test"](np.array([1, 2, 3]) * x_unit_to_use)
+            
+            assert np.all(new_result==result)
 
         else:
 
@@ -200,7 +238,7 @@ def test_call_with_units():
 
         # Test only the power law of XSpec, which is the only one we know we can test at 1 keV
 
-        if key.find("XS")==0 and key != "XS_powerlaw":
+        if key.find("XS")==0 and key != "XS_powerlaw" or (key in _multiplicative_models):
 
             # An XSpec model. Test it only if it's a power law (the others might need other parameters during
             # initialization)
@@ -212,6 +250,12 @@ def test_call_with_units():
             # The TemplateModel function has its own test
 
             continue
+
+#        if key.find("Synchrotron")==0:
+
+            # Naima Synchtron function should have its own test
+
+#            continue
 
         if this_function._n_dim == 1:
 
@@ -242,7 +286,7 @@ def test_call_with_composite_function_with_units():
         res = pts([100, 200] * x_unit_to_use)
 
         # This will fail if the units are wrong
-        res.to(1 / (u.keV * u.cm**2 * u.s))
+        res.to(old_div(1, (u.keV * u.cm**2 * u.s)))
 
     # Test a simple composition
 
@@ -264,6 +308,25 @@ def test_call_with_composite_function_with_units():
 
     one_test(spectrum)
 
+    # test the absorption models
+
+
+    
+    spectrum = PhAbs() * Powerlaw()
+    
+    
+    one_test(spectrum)
+
+    spectrum = TbAbs() * Powerlaw()
+
+    one_test(spectrum)
+
+
+    spectrum = WAbs() * Powerlaw()
+
+    one_test(spectrum)
+
+    
     if has_xspec:
 
         spectrum = XS_phabs() * Powerlaw()
@@ -285,3 +348,21 @@ def test_call_with_composite_function_with_units():
         spectrum = XS_phabs() * XS_powerlaw() * XS_phabs() + XS_powerlaw()
 
         one_test(spectrum)
+
+
+def test_free_param():
+
+    spectrum = Log_parabola()
+    source = PointSource("test_source", ra=123.4, dec=56.7, spectral_shape=spectrum)
+
+    parameters = [spectrum.alpha, spectrum.beta, spectrum.piv, spectrum.K, source.position.ra, source.position.dec]
+
+    for param in parameters:
+        param.free = False
+
+    assert len(source.free_parameters) == 0
+
+    for i, param in enumerate(parameters):
+        param.free = True
+        assert len(source.free_parameters) == i+1
+

@@ -1,10 +1,14 @@
+from __future__ import print_function
+from __future__ import division
 import pytest
 import os
 import numpy as np
 
-from astromodels.functions.template_model import TemplateModel, TemplateModelFactory, MissingDataFile
+from astromodels.functions.template_model import TemplateModel, TemplateModelFactory, MissingDataFile, XSPECTableModel
 from astromodels.functions.functions import Band, Powerlaw
 from astromodels import Model, PointSource, clone_model, load_model
+from astromodels.utils.data_files import _get_data_file_path
+
 import pickle
 
 __author__ = 'giacomov'
@@ -78,7 +82,7 @@ def test_template_factory():
 
     t.save_data(overwrite=True)
 
-    tm = TemplateModel('__test1D')
+    tm = TemplateModel('__test')
 
     tm(energies)
 
@@ -93,9 +97,9 @@ def test_template_function():
 
     mo = get_comparison_function()
 
-    new_alpha_grid = np.linspace(-1.5, 1, 20)
-    new_beta_grid = np.linspace(-3.5, -1.6, 20)
-    new_xp_grid = np.logspace(1, 3, 30)
+    new_alpha_grid = np.linspace(-1.5, 1, 15)
+    new_beta_grid = np.linspace(-3.5, -1.6, 15)
+    new_xp_grid = np.logspace(1, 3, 15)
 
     new_energies = np.logspace(1, 3, 40)
 
@@ -130,7 +134,7 @@ def test_template_function():
                                          "worse than 10 percent, "
                                          "with parameters %s!" % (new_energies[idx], deltas[idx], [a,b,xp]))
 
-
+@pytest.mark.slow
 def test_input_output():
 
     tm = TemplateModel('__test')
@@ -188,3 +192,10 @@ def test_input_output():
 
     os.remove("__test.yml")
 
+def test_xspec_table_model():
+
+    test_table = _get_data_file_path("tests/test_xspec_table_model.fits")
+
+    xtm = XSPECTableModel(test_table)
+
+    xtm.to_table_model('xspectm_test', 'xspec model')

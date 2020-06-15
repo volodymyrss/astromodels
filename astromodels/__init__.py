@@ -1,5 +1,6 @@
+from __future__ import absolute_import
 # Import the version
-# from version import __version__
+
 #
 #
 
@@ -11,16 +12,19 @@ if os.environ.get("ASTROMODELS_DEBUG", None) is None:
     from .sources.extended_source import ExtendedSource
     from .sources.particle_source import ParticleSource
     from .core.parameter import Parameter, IndependentVariable, SettingOutOfBounds
+
     from .functions.functions import *
     from .functions.priors import *
     from .functions.functions_2D import *
     from .functions.functions_3D import *
     from .functions.template_model import *
+    from .functions.apec import *
     from .functions. dark_matter.dm_models import *
     from .functions.function import list_functions, get_function_class
     from .core.model import Model
     from .core.parameter import Parameter
     from .core.spectral_component import SpectralComponent
+    from .core.polarization import LinearPolarization, StokesPolarization
     from .core.model_parser import load_model, clone_model
     from .core.units import get_units
     from .core.memoization import use_astromodels_memoization
@@ -31,7 +35,6 @@ if os.environ.get("ASTROMODELS_DEBUG", None) is None:
 
 import astropy.units as u
 
-# if has_xspec:
-#
-#     from .xspec.factory import *
-#     from .xspec.xspec_settings import *
+from ._version import get_versions
+__version__ = get_versions()['version']
+del get_versions

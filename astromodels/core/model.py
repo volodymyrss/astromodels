@@ -1,3 +1,4 @@
+from builtins import zip
 __author__ = 'giacomov'
 
 import collections
@@ -5,6 +6,7 @@ import collections
 import os
 import pandas as pd
 import numpy as np
+import scipy.integrate
 import warnings
 
 from astromodels.core.my_yaml import my_yaml
@@ -14,6 +16,7 @@ from astromodels.functions.function import get_function
 from astromodels.sources.source import Source, POINT_SOURCE, EXTENDED_SOURCE, PARTICLE_SOURCE
 from astromodels.utils.disk_usage import disk_usage
 from astromodels.utils.long_path_formatter import long_path_formatter
+from astromodels.core.memoization import use_astromodels_memoization
 
 
 class ModelFileExists(IOError):
@@ -43,16 +46,7 @@ class ModelInternalError(ValueError):
 
 class Model(Node):
 
-    # def __reduce__(self):
-    #
-    #     from astromodels.core.model_parser import model_unpickler
-    #
-    #     return model_unpickler, (self.to_dict_with_types(),)
-
     def __init__(self, *sources):
-
-        # There must be at least one source
-        assert len(sources) > 0, "You need to have at least one source in the model."
 
         # Setup the node, using the special name '__root__' to indicate that this is the root of the tree
 
@@ -82,6 +76,9 @@ class Model(Node):
 
         # This controls the verbosity of the display
         self._complete_display = False
+
+        # This will keep track of independent variables (if any)
+        self._independent_variables = {}
 
     def _add_source(self, source):
         """
@@ -202,7 +199,7 @@ class Model(Node):
 
         free_parameters_dictionary = collections.OrderedDict()
 
-        for parameter_name, parameter in self._parameters.iteritems():
+        for parameter_name, parameter in list(self._parameters.items()):
 
             if parameter.free:
 
@@ -228,7 +225,7 @@ class Model(Node):
 
         linked_parameter_dictionary = collections.OrderedDict()
 
-        for parameter_name, parameter in self._parameters.iteritems():
+        for parameter_name, parameter in list(self._parameters.items()):
 
             if parameter.has_auxiliary_variable():
 
@@ -248,7 +245,7 @@ class Model(Node):
 
         assert len(values) == len(self.free_parameters)
 
-        for parameter, this_value in zip(self.free_parameters.values(), values):
+        for parameter, this_value in zip(list(self.free_parameters.values()), values):
 
             parameter.value = this_value
 
@@ -278,7 +275,7 @@ class Model(Node):
 
             _ = self._get_child_from_path(path)
 
-        except (AttributeError, KeyError):
+        except:
 
             return False
 
@@ -382,13 +379,16 @@ class Model(Node):
         :return: none
         """
 
-        assert isinstance(variable, IndependentVariable),"Variable must be an instance of IndependentVariable"
+        assert isinstance(variable, IndependentVariable), "Variable must be an instance of IndependentVariable"
 
         if self._has_child(variable.name):
 
             self._remove_child(variable.name)
 
         self._add_child(variable)
+
+        # Add also to the list of independent variables
+        self._independent_variables[variable.name] = variable
 
     def remove_independent_variable(self, variable_name):
         """
@@ -399,6 +399,9 @@ class Model(Node):
         """
 
         self._remove_child(variable_name)
+
+        # Remove also from the list of independent variables
+        self._independent_variables.pop(variable_name)
 
     def add_external_parameter(self, parameter):
         """
@@ -442,13 +445,25 @@ class Model(Node):
         Link the value of the provided parameters through the provided function (identity is the default, i.e.,
         parameter_1 = parameter_2).
 
-        :param parameter_1: the first parameter
+        :param parameter_1: the first parameter;can be either a single parameter or a list of prarameters
         :param parameter_2: the second parameter
         :param link_function: a function instance. If not provided, the identity function will be used by default.
         Otherwise, this link will be set: parameter_1 = link_function(parameter_2)
         :return: (none)
         """
+        if not isinstance(parameter_1,list):
+        # Make a list of one element
+            parameter_1_list  = [parameter_1]
+        else:
+        # Make a copy to avoid tampering with the input
+            parameter_1_list = list(parameter_1)
+        
+        
+        for param_1 in parameter_1_list:
+            assert param_1.path in self, "Parameter %s is not contained in this model" % param_1.path
 
+        assert parameter_2.path in self, "Parameter %s is not contained in this model" % parameter_2.path
+        
         if link_function is None:
             # Use the Line function by default, with both parameters fixed so that the two
             # parameters to be linked will vary together
@@ -459,31 +474,44 @@ class Model(Node):
 
             link_function.b.value = 0
             link_function.b.fix = True
-
-        parameter_1.add_auxiliary_variable(parameter_2, link_function)
-
-        # Now set the units of the link function
-        link_function.set_units(parameter_2.unit, parameter_1.unit)
-
+        
+        
+        
+        for param_1 in parameter_1_list: 
+            param_1.add_auxiliary_variable(parameter_2, link_function)
+            # Now set the units of the link function
+            link_function.set_units(parameter_2.unit, param_1.unit)
+        
+        
+        
+        
+        
     def unlink(self, parameter):
         """
-        Sets free a parameter which has been linked previously
+        Sets free one or more parameters which have been linked previously
 
-        :param parameter: the parameter to be set free
+        :param parameter: the parameter to be set free, can also be a list of parameters
         :return: (none)
         """
 
-        if parameter.has_auxiliary_variable():
-
-            parameter.remove_auxiliary_variable()
-
+        if not isinstance(parameter,list):
+        # Make a list of one element
+            parameter_list  = [parameter]
         else:
+        # Make a copy to avoid tampering with the input
+            parameter_list = list(parameter)
+            
+        for param in parameter_list:    
+            if param.has_auxiliary_variable():
+                param.remove_auxiliary_variable()
 
-            with warnings.catch_warnings():
+            else:
 
-                warnings.simplefilter("always", RuntimeWarning)
+                with warnings.catch_warnings():
 
-                warnings.warn("Parameter %s has no link to be removed." % parameter.path, RuntimeWarning)
+                    warnings.simplefilter("always", RuntimeWarning)
+
+                    warnings.warn("Parameter %s has no link to be removed." % param.path, RuntimeWarning)
 
     def display(self, complete=False):
         """
@@ -515,9 +543,9 @@ class Model(Node):
             new_line = '\n'
 
         # Table with the summary of the various kind of sources
-        sources_summary = pd.DataFrame.from_items((('Point sources', [self.get_number_of_point_sources()]),
-                                                   ('Extended sources', [self.get_number_of_extended_sources()]),
-                                                   ('Particle sources', [self.get_number_of_particle_sources()])),
+        sources_summary = pd.DataFrame.from_dict( collections.OrderedDict([('Point sources', [self.get_number_of_point_sources()]),
+                                                                          ('Extended sources', [self.get_number_of_extended_sources()]),
+                                                                           ('Particle sources', [self.get_number_of_particle_sources()])]),
                                                   columns=['N'], orient='index')
 
         # These properties traverse the whole tree everytime, so let's cache their results here
@@ -530,7 +558,7 @@ class Model(Node):
 
             parameter_dict = collections.OrderedDict()
 
-            for parameter_name, parameter in free_parameters.iteritems():
+            for parameter_name, parameter in list(free_parameters.items()):
                 # Generate table with only a minimal set of info
 
                 # Generate table with only a minimal set of info
@@ -564,7 +592,7 @@ class Model(Node):
 
             fixed_parameter_dict = collections.OrderedDict()
 
-            for parameter_name, parameter in parameters.iteritems():
+            for parameter_name, parameter in list(parameters.items()):
 
                 if parameter.free or parameter_name in linked_parameters:
 
@@ -603,7 +631,7 @@ class Model(Node):
 
         if linked_parameters:
 
-            for parameter_name, parameter in linked_parameters.iteritems():
+            for parameter_name, parameter in list(linked_parameters.items()):
 
                 parameter_dict = collections.OrderedDict()
 
@@ -632,6 +660,35 @@ class Model(Node):
 
         empty_frame = "(none)%s" % new_line
 
+        # Independent variables
+
+        independent_v_frames = []
+
+        if self._independent_variables:
+
+            for variable_name, variable_instance in list(self._independent_variables.items()):
+
+                v_dict = collections.OrderedDict()
+
+                # Generate table with only a minimal set of info
+
+                this_dict = collections.OrderedDict()
+
+                this_dict['current value'] = variable_instance.value
+                this_dict['unit'] = variable_instance.unit
+
+                v_dict[variable_name] = this_dict
+
+                this_v_frame = pd.DataFrame.from_dict(v_dict)
+
+                independent_v_frames.append(this_v_frame)
+
+        else:
+
+            # No independent variables
+
+            pass
+
         if rich_output:
 
             source_summary_representation = sources_summary._repr_html_()
@@ -656,6 +713,19 @@ class Model(Node):
 
                     linked_summary_representation += linked_frame._repr_html_()
                     linked_summary_representation += new_line
+
+            if len(independent_v_frames) == 0:
+
+                independent_v_representation = empty_frame
+
+            else:
+
+                independent_v_representation = ""
+
+                for v_frame in independent_v_frames:
+
+                    independent_v_representation += v_frame._repr_html_()
+                    independent_v_representation += new_line
 
             if fixed_parameters_summary.empty:
 
@@ -690,6 +760,19 @@ class Model(Node):
 
                     linked_summary_representation += linked_frame.__repr__()
                     linked_summary_representation += "%s%s" % (new_line, new_line)
+
+            if len(independent_v_frames) == 0:
+
+                independent_v_representation = empty_frame
+
+            else:
+
+                independent_v_representation = ""
+
+                for v_frame in independent_v_frames:
+
+                    independent_v_representation += v_frame.__repr__()
+                    independent_v_representation += "%s%s" % (new_line, new_line)
 
             if fixed_parameters_summary.empty:
 
@@ -771,6 +854,20 @@ class Model(Node):
 
         representation += linked_summary_representation
 
+        # Independent variables
+
+        representation += "%sIndependent variables:%s" % (new_line, new_line)
+
+        if not rich_output:
+
+            representation += "----------------------%s%s" % (new_line, new_line)
+
+        else:
+
+            representation += new_line
+
+        representation += independent_v_representation
+
         return representation
 
     def to_dict_with_types(self,root=None):
@@ -784,7 +881,7 @@ class Model(Node):
 
         # Add the types to the sources
 
-        for key in data.keys():
+        for key in list(data.keys()):
 
             try:
 
@@ -871,24 +968,29 @@ class Model(Node):
         :return: a tuple with R.A. and Dec.
         """
 
-        pts = self._point_sources.values()[id]
+        pts = list(self._point_sources.values())[id]
 
         return pts.position.get_ra(), pts.position.get_dec()
 
-    def get_point_source_fluxes(self, id, energies):
+    def get_point_source_fluxes(self, id, energies, tag=None):
         """
         Get the fluxes from the id-th point source
 
         :param id: id of the source
         :param energies: energies at which you need the flux
+        :param tag: a tuple (integration variable, a, b) specifying the integration to perform. If this
+        parameter is specified then the returned value will be the average flux for the source computed as the integral
+        between a and b over the integration variable divided by (b-a). The integration variable must be an independent
+        variable contained in the model. If b is None, then instead of integrating the integration variable will be
+        set to a and the model evaluated in a.
         :return: fluxes
         """
 
-        return self._point_sources.values()[id](energies)
+        return list(self._point_sources.values())[id](energies, tag=tag)
 
     def get_point_source_name(self, id):
 
-        return self._point_sources.values()[id].name
+        return list(self._point_sources.values())[id].name
 
     def get_number_of_extended_sources(self):
         """
@@ -909,7 +1011,7 @@ class Model(Node):
         :return: flux array
         """
 
-        return self._extended_sources.values()[id](j2000_ra, j2000_dec, energies)
+        return list(self._extended_sources.values())[id](j2000_ra, j2000_dec, energies)
 
     def get_extended_source_name(self, id):
         """
@@ -919,17 +1021,17 @@ class Model(Node):
         :return: the name of the id-th source
         """
 
-        return self._extended_sources.values()[id].name
+        return list(self._extended_sources.values())[id].name
 
     def get_extended_source_boundaries(self, id):
 
-        (ra_min, ra_max), (dec_min, dec_max) = self._extended_sources.values()[id].get_boundaries()
+        (ra_min, ra_max), (dec_min, dec_max) = list(self._extended_sources.values())[id].get_boundaries()
 
         return ra_min, ra_max, dec_min, dec_max
 
     def is_inside_any_extended_source(self, j2000_ra, j2000_dec):
 
-        for ext_source in self.extended_sources.values():
+        for ext_source in list(self.extended_sources.values()):
 
             (ra_min, ra_max), (dec_min, dec_max) = ext_source.get_boundaries()
 
@@ -965,11 +1067,11 @@ class Model(Node):
         :return: fluxes
         """
 
-        return self._particle_sources.values()[id](energies)
+        return list(self._particle_sources.values())[id](energies)
 
     def get_particle_source_name(self, id):
 
-        return self._particle_sources.values()[id].name
+        return list(self._particle_sources.values())[id].name
 
     def get_total_flux(self, energies):
         """
