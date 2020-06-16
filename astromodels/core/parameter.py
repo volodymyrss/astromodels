@@ -1220,12 +1220,11 @@ class Parameter(ParameterBase):
         if (min_value is not None) or (max_value is not None):
 
             # If _value is zero, then std will be zero, which doesn't make sense
-            assert value != 0, "You cannot randomize parameter %s because its value is exactly zero" % self.path
 
             # Bounded parameter. Use a truncated normal so we are guaranteed
             # to have a random value within the boundaries
 
-            std = abs(variance * value)
+            std = abs(variance * (max_value - min_value) /2.)
 
             if min_value is not None:
 

@@ -625,7 +625,9 @@ def xspec_model_factory(model_name, xspec_function, model_type, definition):
     # Import the class in the current namespace (locals)
     with warnings.catch_warnings():
         warnings.simplefilter("error")
-        exec('from %s import %s' % (class_name, class_name))
+        c='from %s import %s' % (class_name, class_name)
+        print("exec this: ",c)
+        exec(c)
 
     # Return the class we just created
     return class_name, locals()[class_name]
@@ -641,12 +643,14 @@ def setup_xspec_models():
     for (model_name, xspec_function, model_type) in all_models:
 
         if model_type == 'con':
+            print("skipping con model", model_type, model_name, xspec_function)
 
             # convolution models are not supported
             continue
 
 
         if not hasattr(_xspec, xspec_function):
+            print("skipping xspec model without wrapper", model_type, model_name, xspec_function)
 
             # Some function do not exist in the wrapper. Let's ignore them
 
