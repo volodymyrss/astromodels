@@ -268,7 +268,7 @@ def setup_xspec():
                   libraries=libraries,
                   library_dirs=library_dirs,
                   runtime_library_dirs=library_dirs,
-                  extra_compile_args=[])]
+                  extra_compile_args=[f"-I{headas_root}/include"])]
 
     return ext_modules_configuration
 

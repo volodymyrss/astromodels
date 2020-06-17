@@ -1,5 +1,5 @@
 // 
-//  Copyright (C) 2007  Smithsonian Astrophysical Observatory
+//  Copyright (C) 2007, 2016, 2017, 2020  Smithsonian Astrophysical Observatory
 //
 //
 //  This program is free software; you can redistribute it and/or modify
@@ -22,7 +22,6 @@
 
 #include <sherpa/array.hh>
 
-
 typedef unsigned int SherpaUInt;
 typedef sherpa::Array< unsigned int, NPY_UINT > SherpaUIntArray;
 
@@ -30,7 +29,6 @@ typedef double SherpaFloat;
 typedef sherpa::Array< double, NPY_DOUBLE > DoubleArray;
 typedef DoubleArray SherpaFloatArray;
 
-typedef sherpa::Array< char, NPY_CHAR > CharArray;
 typedef sherpa::Array< int, NPY_INT > IntArray;
 
 typedef int (*converter)( PyObject*, void* );
@@ -38,14 +36,18 @@ typedef int (*converter)( PyObject*, void* );
 #define CONVERTME(arg) ((converter) sherpa::convert_to_contig_array<arg>)
 
 #define SHERPAMOD(name, fctlist) \
-PyMODINIT_FUNC init##name(void);\
-PyMODINIT_FUNC \
-init##name(void) \
-{ \
+static struct PyModuleDef module##name = {\
+PyModuleDef_HEAD_INIT, \
+#name, \
+NULL, \
+-1, \
+fctlist \
+}; \
+\
+PyMODINIT_FUNC PyInit_##name(void) { \
   import_array(); \
-  Py_InitModule( (char*)#name, fctlist ); \
+  return PyModule_Create(&module##name); \
 }
-
 
 #define FCTSPEC(name, func) \
  { (char*)#name, (PyCFunction)func, METH_VARARGS, NULL }
