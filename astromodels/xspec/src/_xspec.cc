@@ -1,4 +1,5 @@
-//  Copyright (C) 2007, 2015-2018  Smithsonian Astrophysical Observatory
+//  Copyright (C) 2007, 2015-2018, 2019, 2020
+//                Smithsonian Astrophysical Observatory
 //
 //
 //  This program is free software; you can redistribute it and/or modify
@@ -15,6 +16,7 @@
 //  with this program; if not, write to the Free Software Foundation, Inc.,
 //  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 //
+
 // INIT_XSPEC is used by xspecmodelfct() in xspec_extension.hh, so it needs to
 // be defined before that file is included
 int _sherpa_init_xspec_library();
@@ -117,29 +119,20 @@ void qsosed_(float* ear, int* ne, float* param, int* ifl, float* photar, float* 
 #endif
 
 #ifndef XSPEC_12_9_1
-void xsaped_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
-void xsbape_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
+// void xsaped_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
+// void xsbape_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 #endif
-
-//void xsaped_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
-//void xsbape_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 
 void xsblbd_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 void xsbbrd_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 void xsbmc_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 void xsbrms_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 
-//#ifndef XSPEC_12_9_1
-//void xsbvpe_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
-//#endif
-
-#ifndef XSPEC_12_10_0
-void c6mekl_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
-void c6pmekl_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
-void c6pvmkl_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
-void c6vmekl_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
+#ifndef XSPEC_12_9_1
+// // // // // void xsbvpe_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 #endif
 
+  
 void cemekl_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 void compbb_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 void compls_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
@@ -148,9 +141,6 @@ void xstitg_(float* ear, int* ne, float* param, int* ifl, float* photar, float* 
 void disk_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 void diskir_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 void xsdskb_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
-#ifndef XSPEC_12_10_1
-void xsdili_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
-#endif
 void diskm_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 void disko_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 void diskpbb_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
@@ -160,7 +150,7 @@ void ezdiskbb_(float* ear, int* ne, float* param, int* ifl, float* photar, float
 
 #ifndef XSPEC_12_9_1
 void xsgaul_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
-#endif
+#endif  
 
 void grad_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 
@@ -170,7 +160,7 @@ void xsgrbcomp(const double* energy, int nFlux, const double* params, int spectr
 
 void jet_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 #endif
-
+  
 void xsgrbm_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 void spin_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 
@@ -178,12 +168,7 @@ void spin_(float* ear, int* ne, float* param, int* ifl, float* photar, float* ph
 void kyrline_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 #endif
 
-#ifndef XSPEC_12_9_1
-void xslorz_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
-void xsmeka_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
-void xsmekl_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
-#endif
-
+  
 void nsa_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 void nsagrav_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 void nsatmos_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
@@ -191,46 +176,46 @@ void nsatmos_(float* ear, int* ne, float* param, int* ifl, float* photar, float*
 #ifndef XSPEC_12_10_0
 void nsmax_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 #endif
-
+  
 void xspegp_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 void xsp1tr_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 void xsposm_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 
 #ifndef XSPEC_12_9_1
-void xsrays_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
+// void xsrays_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 #endif
-
+  
 void xredge_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 void xsrefsch_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 void srcut_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 void sresc_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
-#ifdef XSPEC_12_10_0
+#ifdef XSPEC_12_10_0  
 void ssa_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 #endif
 void xsstep_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 
 #ifndef XSPEC_12_9_1
-void xsvape_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
+// void xsvape_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 #endif
-
+  
 void xsbrmv_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 
 #ifndef XSPEC_12_9_1
-void xsvmek_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
-void xsvmkl_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
+// void xsvmek_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
+// void xsvmkl_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 #endif
-
+  
 #ifndef XSPEC_12_9_1
-void xsvrys_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
+// void xsvrys_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 #endif
-
+  
 void xszbod_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 void xszbrm_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 
-#ifndef XSPEC_12_10_0
+#ifndef XSPEC_12_10_0  
 void acisabs_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 #endif
-
+  
 void xscnst_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 void xscabs_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 void xscycl_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
@@ -249,10 +234,10 @@ void xssmdg_(float* ear, int* ne, float* param, int* ifl, float* photar, float* 
 void xsspln_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 void xssssi_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 
-#ifndef XSPEC_12_10_0
+#ifndef XSPEC_12_10_0  
 void swind1_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 #endif
-
+  
 void xsred_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 void xsabsv_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 void xsvphb_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
@@ -268,7 +253,7 @@ void xszphb_(float* ear, int* ne, float* param, int* ifl, float* photar, float* 
 #ifndef XSPEC_12_10_0
 void zxipcf_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 #endif
-
+  
 void xszcrd_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 void msldst_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 void xszvab_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
@@ -278,10 +263,6 @@ void xszabs_(float* ear, int* ne, float* param, int* ifl, float* photar, float* 
 void xszwnb_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 
 
-#ifndef XSPEC_12_9_1
-void xsbvvp_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
-void xsvvap_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
-#endif
 
 void zigm_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 
@@ -301,7 +282,7 @@ void xscomptb(const double* energy, int nFlux, const double* params, int spectru
 void nsmaxg_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 void nsx_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 #endif
-
+  
 //multiplicative
 void xsphei_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 void xslyman_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
@@ -313,32 +294,22 @@ void ismabs_(float* ear, int* ne, float* param, int* ifl, float* photar, float* 
 void slimbbmodel(const double* energy, int nFlux, const double* params, int spectrumNumber, double* flux, double* fluxError, const char* initStr);
 #endif
 
-#ifdef XSPEC_12_10_1
-void tdrelline_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
-void tdrellinelp_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
-void tdrellinelpext_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
-#endif
-
 // XSPEC table models; in XSPEC 12.10.1 these have been consolidated
 // into the tabint routine.
 //
 #ifndef XSPEC_12_10_1
-void xsatbl(float* ear, int ne, float* param, const char* filenm, int ifl,
+void xsatbl(float* ear, int ne, float* param, const char* filenm, int ifl, 
 	    float* photar, float* photer);
-void xsmtbl(float* ear, int ne, float* param, const char* filenm, int ifl,
+void xsmtbl(float* ear, int ne, float* param, const char* filenm, int ifl, 
 	    float* photar, float* photer);
 #endif
 
 // XSPEC convolution models
 //
 
-void rgsxsrc_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 
 #ifdef XSPEC_12_10_1
 void kyconv_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
-void tdrelconv_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
-void tdrelconvlp_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
-void tdrelconvlpext_(float* ear, int* ne, float* param, int* ifl, float* photar, float* photer);
 #endif
 
 }
@@ -365,7 +336,7 @@ int _sherpa_init_xspec_library()
 		     "HEADAS environment variable is not set" );
     return EXIT_FAILURE;
   }
-
+  
   // Stream buffer for redirected stdout
   std::streambuf* cout_sbuf = NULL;
   std::ofstream fout;
@@ -389,7 +360,7 @@ int _sherpa_init_xspec_library()
 
     // Note:  since we are *not* redirecting std::cerr, any error
     // messages are still seen; if, for example, HEADAS is not set,
-    // user will still see error message printed to stderr (i.e., to
+    // user will still see error message printed to stderr (i.e., to 
     // screen by default).  We still want such error messages to be
     // seen!  So do *not* redirect std::cerr.
     //
@@ -399,23 +370,23 @@ int _sherpa_init_xspec_library()
     // Perhaps the screen output could be saved, rather than redirected
     // to /dev/null, and checked for the string '***Error: ', which
     // appears to be used in the error messages from XSPEC.
-
+    
     cout_sbuf = std::cout.rdbuf();
     fout.open("/dev/null");
     if (cout_sbuf != NULL && fout.is_open())
       std::cout.rdbuf(fout.rdbuf()); // temporary redirect stdout to /dev/null
-
+    
     // Initialize XSPEC model library
     FNINIT();
-
+    
     // Get back original std::cout
     if (cout_sbuf != NULL) {
       std::cout.clear();
-      std::cout.rdbuf(cout_sbuf);
+      std::cout.rdbuf(cout_sbuf); 
     }
     fout.clear();
     fout.close();
-
+    
     // Try to minimize model chatter for normal operation.
     FPCHAT( 0 );
 
@@ -460,7 +431,7 @@ int _sherpa_init_xspec_library()
 }
 
 static PyObject* get_version( PyObject *self )
-{
+{ 
 
   if ( EXIT_SUCCESS != _sherpa_init_xspec_library() )
     return NULL;
@@ -469,7 +440,7 @@ static PyObject* get_version( PyObject *self )
   int retval;
 
   try {
-
+    
     retval = xs_getVersion(version, 256);
 
   } catch(...) {
@@ -479,19 +450,19 @@ static PyObject* get_version( PyObject *self )
     return NULL;
 
   }
-
+  
   if( retval < 0 ) {
     PyErr_SetString( PyExc_LookupError,
 		     (char*)"XSPEC version string was truncated" );
     return NULL;
   }
-
+  
   return Py_BuildValue( (char*)"s", version );
 
 }
 
 static PyObject* get_chatter( PyObject *self )
-{
+{ 
 
   if ( EXIT_SUCCESS != _sherpa_init_xspec_library() )
     return NULL;
@@ -516,7 +487,7 @@ static PyObject* get_chatter( PyObject *self )
 
 
 static PyObject* get_abund( PyObject *self, PyObject *args )
-{
+{ 
 
   if ( EXIT_SUCCESS != _sherpa_init_xspec_library() )
     return NULL;
@@ -543,46 +514,46 @@ static PyObject* get_abund( PyObject *self, PyObject *args )
   if( !element ) {
 
     retval = (PyObject*) Py_BuildValue( (char*)"s", abund );
-
+  
   } else {
 
     float abundVal = 0.0;
     std::streambuf *cerr_sbuf = NULL;
     std::ostringstream fout;
-
+    
     try {
-
+      
       cerr_sbuf = std::cerr.rdbuf();
-
+      
       if (cerr_sbuf != NULL)
 	std::cerr.rdbuf(fout.rdbuf());
-
+      
       abundVal = FGABND(element);
-
+      
       // Get back original std::cerr
       if (cerr_sbuf != NULL)
-	std::cerr.rdbuf(cerr_sbuf);
-
-
+	std::cerr.rdbuf(cerr_sbuf); 
+      
+      
     } catch(...) {
-
+      
       // Get back original std::cerr
       if (cerr_sbuf != NULL)
 	std::cerr.rdbuf(cerr_sbuf);
-
+      
       PyErr_Format( PyExc_ValueError,
 		    (char*)"could not get XSPEC abundance for '%s'",
 		  element);
       return NULL;
-
+      
     }
-
+    
     if( fout.str().size() > 0 ) {
       PyErr_Format( PyExc_TypeError,
 		    (char*)"could not find element '%s'", element);
       return NULL;
     }
-
+    
     retval = (PyObject*) Py_BuildValue( (char*)"f", abundVal );
   }
 
@@ -591,7 +562,7 @@ static PyObject* get_abund( PyObject *self, PyObject *args )
 
 
 static PyObject* get_cosmo( PyObject *self )
-{
+{ 
 
   if ( EXIT_SUCCESS != _sherpa_init_xspec_library() )
     return NULL;
@@ -620,7 +591,7 @@ static PyObject* get_cosmo( PyObject *self )
 
 
 static PyObject* get_cross( PyObject *self )
-{
+{ 
 
   if ( EXIT_SUCCESS != _sherpa_init_xspec_library() )
     return NULL;
@@ -645,7 +616,7 @@ static PyObject* get_cross( PyObject *self )
 
 
 static PyObject* set_chatter( PyObject *self, PyObject *args )
-{
+{ 
 
   if ( EXIT_SUCCESS != _sherpa_init_xspec_library() )
     return NULL;
@@ -660,7 +631,7 @@ static PyObject* set_chatter( PyObject *self, PyObject *args )
     FPCHAT( chatter );
 
   } catch(...) {
-
+    
     PyErr_Format( PyExc_ValueError,
                   (char*)"could not set XSPEC chatter level to %d",
                   chatter);
@@ -674,7 +645,7 @@ static PyObject* set_chatter( PyObject *self, PyObject *args )
 
 
 static PyObject* set_abund( PyObject *self, PyObject *args )
-{
+{ 
 
   if ( EXIT_SUCCESS != _sherpa_init_xspec_library() )
     return NULL;
@@ -690,7 +661,7 @@ static PyObject* set_abund( PyObject *self, PyObject *args )
     FPSOLR( table, &status );
 
   } catch(...) {
-
+    
     status = 1;
 
   }
@@ -703,38 +674,38 @@ static PyObject* set_abund( PyObject *self, PyObject *args )
     size_t count(0);
 
     try {
-
+      
       float element;
       fileStream.exceptions(std::ios_base::failbit);
-
+      
       while (count < ABUND_SIZE && fileStream >> element) {
 	vals[count] = element;
 	++count;
       }
-
+      
       status = 0;
     }
     catch ( std::exception& ) {
-
+     
       if( !fileStream.eof() ) {
-      	PyErr_Format( PyExc_ValueError,
+      	PyErr_Format( PyExc_ValueError, 
                       (char*)"Cannot read file '%s'.  It may not exist or contains invalid data",
                       table);
 	return NULL;
       }
-
+      
       status = 1;
     }
 
     try {
-
+      
       FPSOLR((char*)"file", &status);
       FPSLFL( &vals[0], ABUND_SIZE, &status );
-
+      
     } catch(...) {
-
+      
       status = 1;
-
+      
     }
   }
 
@@ -751,7 +722,7 @@ static PyObject* set_abund( PyObject *self, PyObject *args )
 
 
 static PyObject* set_cosmo( PyObject *self, PyObject *args )
-{
+{ 
 
   if ( EXIT_SUCCESS != _sherpa_init_xspec_library() )
     return NULL;
@@ -785,7 +756,7 @@ static PyObject* set_cosmo( PyObject *self, PyObject *args )
 
 
 static PyObject* set_cross( PyObject *self, PyObject *args )
-{
+{ 
 
   if ( EXIT_SUCCESS != _sherpa_init_xspec_library() )
     return NULL;
@@ -820,7 +791,7 @@ static PyObject* set_cross( PyObject *self, PyObject *args )
 
 
 static PyObject* set_xset( PyObject *self, PyObject *args )
-{
+{ 
 
   if ( EXIT_SUCCESS != _sherpa_init_xspec_library() )
     return NULL;
@@ -854,7 +825,7 @@ static PyObject* set_xset( PyObject *self, PyObject *args )
 }
 
 static PyObject* get_xset( PyObject *self, PyObject *args  )
-{
+{ 
 
   if ( EXIT_SUCCESS != _sherpa_init_xspec_library() )
     return NULL;
@@ -973,10 +944,9 @@ static PyMethodDef XSpecMethods[] = {
   XSPECMODELFCT_C_NORM( C_apec, 4 ),
   XSPECMODELFCT_C_NORM( C_bapec, 5 ),
 #else
-  XSPECMODELFCT_NORM( xsaped, 4 ),
-  XSPECMODELFCT_NORM( xsbape, 5 ),
+//   XSPECMODELFCT_NORM( xsaped, 4 ),
+//   XSPECMODELFCT_NORM( xsbape, 5 ),
 #endif
-
   XSPECMODELFCT_NORM( xsblbd, 2 ),
   XSPECMODELFCT_NORM( xsbbrd, 2 ),
   XSPECMODELFCT_C_NORM( C_xsbexrav, 10 ),
@@ -991,8 +961,8 @@ static PyMethodDef XSpecMethods[] = {
 #endif
 #ifdef XSPEC_12_9_1
   XSPECMODELFCT_C_NORM( C_bvapec, 17 ),
-#else
-  XSPECMODELFCT_NORM( xsbvpe, 17 ),
+#else  
+//   XSPECMODELFCT_NORM( xsbvpe, 17 ),
 #endif
 #ifdef XSPEC_12_10_0
   XSPECMODELFCT_C_NORM( C_bvrnei, 19 ),
@@ -1000,12 +970,8 @@ static PyMethodDef XSpecMethods[] = {
   XSPECMODELFCT_C_NORM( C_c6pmekl, 11 ),
   XSPECMODELFCT_C_NORM( C_c6pvmkl, 24 ),
   XSPECMODELFCT_C_NORM( C_c6vmekl, 24 ),
-#else
-  XSPECMODELFCT_NORM( c6mekl, 11 ),
-  XSPECMODELFCT_NORM( c6pmekl, 11 ),
-  XSPECMODELFCT_NORM( c6pvmkl, 24 ),
-  XSPECMODELFCT_NORM( c6vmekl, 24 ),
-#endif
+#else  
+#endif  
   XSPECMODELFCT_NORM( cemekl, 7 ),
   XSPECMODELFCT_C_NORM( C_cemVMekal, 20 ),
   XSPECMODELFCT_C_NORM( C_xscflw, 6 ),
@@ -1021,7 +987,6 @@ static PyMethodDef XSpecMethods[] = {
 #ifdef XSPEC_12_10_1
   XSPECMODELFCT_C_NORM( C_diskline, 6 ),
 #else
-  XSPECMODELFCT_NORM( xsdili, 6 ),
 #endif
   XSPECMODELFCT_NORM( diskm, 5 ),
   XSPECMODELFCT_NORM( disko, 5 ),
@@ -1037,9 +1002,9 @@ static PyMethodDef XSpecMethods[] = {
 #endif
   XSPECMODELFCT_C_NORM( C_gnei, 6 ),
   XSPECMODELFCT_NORM( grad, 7 ),
-#ifdef XSPEC_12_10_0
+#ifdef XSPEC_12_10_0  
   XSPECMODELFCT_C_NORM( xsgrbcomp, 10 ),
-#endif
+#endif  
   XSPECMODELFCT_NORM( xsgrbm, 4 ),
   XSPECMODELFCT_C_NORM( C_kerrbb, 10 ),
 #ifdef XSPEC_12_10_0
@@ -1057,21 +1022,14 @@ static PyMethodDef XSpecMethods[] = {
   XSPECMODELFCT_NORM( kyrline, 12 ),
 #endif
 
-#ifdef XSPEC_12_10_1
   XSPECMODELFCT_C_NORM( C_laor, 6 ),
-#else
-  XSPECMODELFCT_C_NORM( C_xslaor, 6 ),
-#endif
   XSPECMODELFCT_C_NORM( C_laor2, 8 ),
 #ifdef XSPEC_12_9_1
   XSPECMODELFCT_C_NORM( C_lorentzianLine, 3 ),
   XSPECMODELFCT_C_NORM( C_meka, 5 ),
   XSPECMODELFCT_C_NORM( C_mekal, 6 ),
 #else
-  XSPECMODELFCT_NORM( xslorz, 3 ),
-  XSPECMODELFCT_NORM( xsmeka, 5 ),
-  XSPECMODELFCT_NORM( xsmekl, 6 ),
-#endif
+#endif  
   XSPECMODELFCT_C_NORM( C_xsmkcf, 6 ),
   XSPECMODELFCT_C_NORM( C_nei, 5 ),
   XSPECMODELFCT_C_NORM( C_nlapec, 4 ),
@@ -1079,7 +1037,7 @@ static PyMethodDef XSpecMethods[] = {
   XSPECMODELFCT_NORM( nsa, 5 ),
   XSPECMODELFCT_NORM( nsagrav, 4 ),
   XSPECMODELFCT_NORM( nsatmos, 5 ),
-#ifdef XSPEC_12_10_0
+#ifdef XSPEC_12_10_0  
   XSPECMODELFCT_C_NORM( C_nsmax, 4 ),
 #else
   XSPECMODELFCT_NORM( nsmax, 4 ),
@@ -1096,30 +1054,24 @@ static PyMethodDef XSpecMethods[] = {
 #ifdef XSPEC_12_9_1
   XSPECMODELFCT_C_NORM(C_raysmith, 4 ),
 #else
-  XSPECMODELFCT_NORM( xsrays, 4 ),
-#endif
+//   XSPECMODELFCT_NORM( xsrays, 4 ),
+#endif  
   XSPECMODELFCT_NORM( xredge, 3 ),
   XSPECMODELFCT_NORM( xsrefsch, 14 ),
-
-#ifdef XSPEC_12_10_1
-  XSPECMODELFCT_NORM( tdrelline, 11 ),
-  XSPECMODELFCT_NORM( tdrellinelp, 10 ),
-  XSPECMODELFCT_NORM( tdrellinelpext, 13 ),
-#endif
 
   XSPECMODELFCT_C_NORM( C_sedov, 6 ),
   XSPECMODELFCT_NORM( srcut, 3 ),
   XSPECMODELFCT_NORM( sresc, 3 ),
-#ifdef XSPEC_12_10_0
+#ifdef XSPEC_12_10_0  
   XSPECMODELFCT_NORM( ssa, 3 ),
-#endif
+#endif  
   XSPECMODELFCT_NORM( xsstep, 3 ),
 
 #ifdef XSPEC_12_9_1
   XSPECMODELFCT_C_NORM( C_vapec, 16 ),
-#else
-  XSPECMODELFCT_NORM( xsvape, 16 ),
-#endif
+#else  
+//   XSPECMODELFCT_NORM( xsvape, 16 ),
+#endif  
   XSPECMODELFCT_NORM( xsbrmv, 3 ),
 
 #ifdef XSPEC_12_10_1
@@ -1132,9 +1084,9 @@ static PyMethodDef XSpecMethods[] = {
   XSPECMODELFCT_C_NORM( C_vmeka, 18 ),
   XSPECMODELFCT_C_NORM( C_vmekal, 19 ),
 #else
-  XSPECMODELFCT_NORM( xsvmek, 18 ),
-  XSPECMODELFCT_NORM( xsvmkl, 19 ),
-#endif
+//   XSPECMODELFCT_NORM( xsvmek, 18 ),
+//   XSPECMODELFCT_NORM( xsvmkl, 19 ),
+#endif  
   XSPECMODELFCT_C_NORM( C_xsvmcf, 19 ),
   XSPECMODELFCT_C_NORM( C_vnei, 17 ),
   XSPECMODELFCT_C_NORM( C_vnpshock, 19 ),
@@ -1142,8 +1094,8 @@ static PyMethodDef XSpecMethods[] = {
 #ifdef XSPEC_12_9_1
   XSPECMODELFCT_C_NORM( C_vraysmith, 15 ),
 #else
-  XSPECMODELFCT_NORM( xsvrys, 15 ),
-#endif
+//   XSPECMODELFCT_NORM( xsvrys, 15 ),
+#endif  
   XSPECMODELFCT_C_NORM( C_vsedov, 18 ),
   XSPECMODELFCT_NORM( xszbod, 3 ),
 
@@ -1169,7 +1121,7 @@ static PyMethodDef XSpecMethods[] = {
 #else
   XSPECMODELFCT( acisabs, 8 ),
 #endif
-
+  
   XSPECMODELFCT( xscnst, 1 ),
   XSPECMODELFCT( xscabs, 1 ),
   XSPECMODELFCT( xscycl, 5 ),
@@ -1191,12 +1143,12 @@ static PyMethodDef XSpecMethods[] = {
   XSPECMODELFCT( xsspln, 6 ),
   XSPECMODELFCT( xssssi, 1 ),
 
-#ifdef XSPEC_12_10_0
+#ifdef XSPEC_12_10_0  
   XSPECMODELFCT_C( C_swind1, 4 ),
 #else
   XSPECMODELFCT( swind1, 4 ),
 #endif
-
+  
   XSPECMODELFCT_C( C_tbabs, 1 ),
   XSPECMODELFCT_C( C_tbgrain, 6 ),
   XSPECMODELFCT_C( C_tbvabs, 42 ),
@@ -1217,7 +1169,7 @@ static PyMethodDef XSpecMethods[] = {
 #else
   XSPECMODELFCT( zxipcf, 4 ),
 #endif
-
+  
   XSPECMODELFCT( xszcrd, 2 ),
   XSPECMODELFCT( msldst, 4 ),
   XSPECMODELFCT_C( C_ztbabs, 2 ),
@@ -1238,9 +1190,7 @@ static PyMethodDef XSpecMethods[] = {
 #ifdef XSPEC_12_9_1
   XSPECMODELFCT_C_NORM( C_bvvapec, 34 ),
   XSPECMODELFCT_C_NORM( C_vvapec, 33 ),
-#else
-  XSPECMODELFCT_NORM( xsbvvp, 34 ),
-  XSPECMODELFCT_NORM( xsvvap, 33 ),
+#else  
 #endif
 #ifdef XSPEC_12_10_0
   XSPECMODELFCT_C_NORM( C_bvvrnei, 36 ),
@@ -1252,9 +1202,9 @@ static PyMethodDef XSpecMethods[] = {
   XSPECMODELFCT_NORM( eplogpar, 3 ),
 #ifdef XSPEC_12_10_1
   XSPECMODELFCT_C_NORM( C_logpar, 4 ),
-#else
+#else  
   XSPECMODELFCT_NORM( logpar, 4 ),
-#endif
+#endif  
   XSPECMODELFCT_NORM( optxagn, 14 ),
   XSPECMODELFCT_NORM( optxagnf, 12 ),
   XSPECMODELFCT_NORM( pexmon, 8 ),
@@ -1267,14 +1217,14 @@ static PyMethodDef XSpecMethods[] = {
   XSPECMODELFCT_C_NORM( xscompmag, 9 ), // DJB thinks it's okay to use the C++ wrapper for C
   XSPECMODELFCT_C_NORM( xscomptb, 7 ), // DJB thinks it's okay to use the C++ wrapper for C
 
-#ifdef XSPEC_12_10_0
+#ifdef XSPEC_12_10_0  
   XSPECMODELFCT_C_NORM( C_nsmaxg, 6 ),
   XSPECMODELFCT_C_NORM( C_nsx, 6 ),
 #else
   XSPECMODELFCT_NORM( nsmaxg, 6 ),
   XSPECMODELFCT_NORM( nsx, 6 ),
 #endif
-
+  
   XSPECMODELFCT_C_NORM( C_rnei, 6 ),
   XSPECMODELFCT_C_NORM( C_vrnei, 18 ),
   XSPECMODELFCT_C_NORM( C_vvrnei, 35 ),
@@ -1301,40 +1251,11 @@ static PyMethodDef XSpecMethods[] = {
   XSPECMODELFCT_CON(C_cflux, 3),
   XSPECMODELFCT_CON(C_cpflux, 3),
 
-#ifdef XSPEC_12_10_0
-  XSPECMODELFCT_CON(C_gsmooth, 2),
-#else
-  //XSPECMODELFCT_CON(C_xsgsmt, 2),
-  XSPECMODELFCT_CON(C_gsmooth, 2),
-#endif
-
-  XSPECMODELFCT_CON(C_ireflct, 7),
-  XSPECMODELFCT_CON(C_kdblur, 4),
-  XSPECMODELFCT_CON(C_kdblur2, 6),
-  XSPECMODELFCT_CON(C_spinconv, 7),
-
-#ifdef XSPEC_12_10_1
-  XSPECMODELFCT_CON_F77(kyconv, 12),
-#endif
-
-#ifdef XSPEC_12_10_0
-  XSPECMODELFCT_CON(C_lsmooth, 2),
-#else
-  XSPECMODELFCT_CON(C_lsmooth, 2),
-  //XSPECMODELFCT_CON(C_xslsmt, 2),
-#endif
-
+  
   XSPECMODELFCT_CON(C_PartialCovering, 1),
   XSPECMODELFCT_CON(C_rdblur, 4),
   XSPECMODELFCT_CON(C_reflct, 5),
 
-#ifdef XSPEC_12_10_1
-  XSPECMODELFCT_CON_F77(tdrelconv, 8),
-  XSPECMODELFCT_CON_F77(tdrelconvlp, 7),
-  XSPECMODELFCT_CON_F77(tdrelconvlpext, 10),
-#endif
-
-  XSPECMODELFCT_CON_F77(rgsxsrc, 1),
   XSPECMODELFCT_CON(C_simpl, 3),
   XSPECMODELFCT_CON(C_zashift, 1),
   XSPECMODELFCT_CON(C_zmshift, 1),
@@ -1352,7 +1273,7 @@ static PyMethodDef XSpecMethods[] = {
 
   XSPECMODELFCT_C_NORM(C_carbatm, 4),
   XSPECMODELFCT_C_NORM(C_hatm, 4),
-#ifdef XSPEC_12_10_0
+#ifdef XSPEC_12_10_0  
   XSPECMODELFCT_NORM(jet, 16),
 #endif
   XSPECMODELFCT(ismabs, 31),
@@ -1376,9 +1297,6 @@ static PyMethodDef XSpecMethods[] = {
 
 };
 
-
-#ifdef PY3
-
 static struct PyModuleDef xspec_module = {
         PyModuleDef_HEAD_INIT,
         "_xspec",
@@ -1391,12 +1309,3 @@ PyMODINIT_FUNC PyInit__xspec(void) {
   import_array();
   return PyModule_Create(&xspec_module);
 }
-
-#else
-
-PyMODINIT_FUNC
-init_xspec(void) {
-  import_array();
-  Py_InitModule( (char*)"_xspec", XSpecMethods );
-}
-#endif
